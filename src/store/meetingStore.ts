@@ -8,7 +8,6 @@ interface MeetingState {
   addMeeting: (meeting: Omit<Meeting, 'id'>) => void;
   updateMeeting: (id: string, updates: Partial<Meeting>) => void;
   deleteMeeting: (id: string) => void;
-  getAttendedDates: () => string[];
   quickLogToday: () => void;
 }
 
@@ -33,13 +32,6 @@ export const useMeetingStore = create<MeetingState>()(
         set((state) => ({
           meetings: state.meetings.filter((m) => m.id !== id),
         })),
-
-      getAttendedDates: () => {
-        return get()
-          .meetings
-          .filter((m) => m.attended)
-          .map((m) => m.date);
-      },
 
       quickLogToday: () => {
         const { addMeeting, meetings } = get();
@@ -66,3 +58,7 @@ export const useMeetingStore = create<MeetingState>()(
     }
   )
 );
+
+export function getAttendedDates(meetings: Meeting[]): string[] {
+  return meetings.filter((m) => m.attended).map((m) => m.date);
+}

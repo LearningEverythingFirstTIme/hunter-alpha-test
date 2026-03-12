@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, startOfMonth, getDay, addMonths, subMonths } from 'date-fns';
-import { useMeetingStore } from '../../store/meetingStore';
+import { useMeetingStore, getAttendedDates } from '../../store/meetingStore';
 import { getMonthDays, isAttendedOnDate, isToday as checkIsToday } from '../../utils/dates';
 
 interface CalendarViewProps {
@@ -12,7 +12,7 @@ interface CalendarViewProps {
 export function CalendarView({ onDayClick, onLogClick }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const meetings = useMeetingStore((s) => s.meetings);
-  const attendedDates = useMeetingStore((s) => s.getAttendedDates());
+  const attendedDates = useMemo(() => getAttendedDates(meetings), [meetings]);
 
   const days = useMemo(() => getMonthDays(currentMonth), [currentMonth]);
   const startDay = getDay(startOfMonth(currentMonth));

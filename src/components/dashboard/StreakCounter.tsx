@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { StreakFlame } from '../ui/StreakFlame';
-import { useMeetingStore } from '../../store/meetingStore';
+import { useMeetingStore, getAttendedDates } from '../../store/meetingStore';
 import { calculateStreak } from '../../utils/dates';
 
 export function StreakCounter() {
-  const getAttendedDates = useMeetingStore((s) => s.getAttendedDates);
-  const streak = calculateStreak(getAttendedDates());
+  const meetings = useMeetingStore((s) => s.meetings);
+  const streak = useMemo(() => calculateStreak(getAttendedDates(meetings)), [meetings]);
 
   return (
     <motion.div

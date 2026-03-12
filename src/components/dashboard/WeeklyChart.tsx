@@ -11,7 +11,7 @@ import {
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
-import { useMeetingStore } from '../../store/meetingStore';
+import { useMeetingStore, getAttendedDates } from '../../store/meetingStore';
 import { getWeekDays, isAttendedOnDate } from '../../utils/dates';
 
 function CustomTooltip({ active, payload }: { active?: boolean; payload?: { value: number }[] }) {
@@ -27,8 +27,8 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { valu
 }
 
 export function WeeklyChart() {
-  const getAttendedDates = useMeetingStore((s) => s.getAttendedDates);
-  const attendedDates = useMemo(() => getAttendedDates(), [getAttendedDates]);
+  const meetings = useMeetingStore((s) => s.meetings);
+  const attendedDates = useMemo(() => getAttendedDates(meetings), [meetings]);
 
   const data = useMemo(() => {
     const days = getWeekDays();

@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { motion, useSpring, useTransform } from 'framer-motion';
-import { useTreasuryStore } from '../../store/treasuryStore';
+import { useTreasuryStore, getBalance, getIncomeTotal, getExpenseTotal } from '../../store/treasuryStore';
 import { formatCurrency } from '../../utils/currency';
 import { Card } from '../ui/Card';
 
 function AnimatedNumber({ value }: { value: number }) {
   const spring = useSpring(0, { stiffness: 80, damping: 20 });
-  const display = useTransform(spring, (current) => formatCurrency(current));
+  const display = useTransform(spring, (current: number) => formatCurrency(current));
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -14,7 +14,7 @@ function AnimatedNumber({ value }: { value: number }) {
   }, [spring, value]);
 
   useEffect(() => {
-    const unsubscribe = display.on('change', (latest) => {
+    const unsubscribe = display.on('change', (latest: string) => {
       if (ref.current) {
         ref.current.textContent = latest;
       }
@@ -26,13 +26,11 @@ function AnimatedNumber({ value }: { value: number }) {
 }
 
 export function BalanceCard() {
-  const getBalance = useTreasuryStore((s) => s.getBalance);
-  const getIncomeTotal = useTreasuryStore((s) => s.getIncomeTotal);
-  const getExpenseTotal = useTreasuryStore((s) => s.getExpenseTotal);
+  const transactions = useTreasuryStore((s) => s.transactions);
 
-  const balance = getBalance();
-  const income = getIncomeTotal();
-  const expenses = getExpenseTotal();
+  const balance = useMemo(() => getBalance(transactions), [transactions]);
+  const income = useMemo(() => getIncomeTotal(transactions), [transactions]);
+  const expenses = useMemo(() => getExpenseTotal(transactions), [transactions]);
 
   return (
     <Card variant="warm" className="text-center">

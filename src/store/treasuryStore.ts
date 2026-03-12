@@ -7,14 +7,11 @@ interface TreasuryState {
   transactions: Transaction[];
   addTransaction: (transaction: Omit<Transaction, 'id'>) => void;
   deleteTransaction: (id: string) => void;
-  getBalance: () => number;
-  getIncomeTotal: () => number;
-  getExpenseTotal: () => number;
 }
 
 export const useTreasuryStore = create<TreasuryState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       transactions: [],
 
       addTransaction: (transaction) =>
@@ -26,25 +23,25 @@ export const useTreasuryStore = create<TreasuryState>()(
         set((state) => ({
           transactions: state.transactions.filter((t) => t.id !== id),
         })),
-
-      getBalance: () => {
-        return get().transactions.reduce((sum, t) => sum + t.amount, 0);
-      },
-
-      getIncomeTotal: () => {
-        return get()
-          .transactions.filter((t) => t.amount > 0)
-          .reduce((sum, t) => sum + t.amount, 0);
-      },
-
-      getExpenseTotal: () => {
-        return get()
-          .transactions.filter((t) => t.amount < 0)
-          .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-      },
     }),
     {
       name: 'aa-treasury',
     }
   )
 );
+
+export function getBalance(transactions: Transaction[]): number {
+  return transactions.reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function getIncomeTotal(transactions: Transaction[]): number {
+  return transactions
+    .filter((t) => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0);
+}
+
+export function getExpenseTotal(transactions: Transaction[]): number {
+  return transactions
+    .filter((t) => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+}
